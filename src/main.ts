@@ -1,4 +1,3 @@
-import "dotenv/config";
 import type { Context } from "telegraf";
 import type { Update } from "telegraf/types";
 import { AppConfig, loadConfig } from "./config.js";
