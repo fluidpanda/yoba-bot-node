@@ -1,10 +1,10 @@
-import type { Context } from "telegraf";
-import type { Update } from "telegraf/types";
-import { AppConfig, loadConfig } from "./config.js";
+import { Telegraf } from "telegraf";
+import { plugins } from "./bot/commands/index.js";
 import { botLogUpdates } from "./bot/middleware/log_updates.js";
 import { botRestrictToOwner } from "./bot/middleware/restrict_to_owner.js";
-import { plugins } from "./bot/commands/index.js";
-import { Telegraf } from "telegraf";
+import { AppConfig, loadConfig } from "./config.js";
+import type { Context } from "telegraf";
+import type { Update } from "telegraf/types";
 
 async function main(): Promise<void> {
     const config: AppConfig = loadConfig();
