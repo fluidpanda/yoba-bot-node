@@ -1,5 +1,3 @@
-import dotenv, { DotenvConfigOutput } from "dotenv";
-
 export interface AppConfig {
     botToken: string;
     ownerId: number | null;
@@ -21,10 +19,6 @@ function envInt(name: string): number | null {
 }
 
 export function loadConfig(): AppConfig {
-    const res: DotenvConfigOutput = dotenv.config({ quiet: true });
-    if (res.error) {
-        throw res.error;
-    }
     return {
         botToken: requireEnv("BOT_TOKEN"),
         ownerId: envInt("BOT_OWNER"),
