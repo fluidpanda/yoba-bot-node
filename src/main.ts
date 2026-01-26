@@ -1,35 +1,32 @@
 import "./env";
 import { Telegraf } from "telegraf";
-import { plugins } from "./bot/commands";
-import { botLogUpdates } from "./bot/middleware/log_updates";
-import { botRestrictToOwner } from "./bot/middleware/restrict_to_owner";
+import { buildCommandPlugins } from "./bot/commands";
+import { buildMiddlewares } from "./bot/middleware";
+import { BotCtx, Plugin } from "./bot/types";
 import { AppConfig, loadConfig } from "./config";
 import { log } from "./logging";
-import type { Context } from "telegraf";
-import type { Update } from "telegraf/types";
+import { Logger } from "./logging/logger";
 
-const logger = log.with({ module: "main" });
+const logger: Logger = log.with({ module: "main" });
 
 async function main(): Promise<void> {
+    const startedAtMs: number = Date.now();
     const config: AppConfig = loadConfig();
-    const bot = new Telegraf<Context<Update>>(config.botToken);
-    bot.use(botLogUpdates);
-    if (config.ownerId !== null) {
-        bot.use(botRestrictToOwner(config.ownerId));
-    }
-    for (const plugin of plugins) {
-        plugin(bot);
-    }
+    const bot = new Telegraf<BotCtx>(config.botToken);
+
+    const middlewares = buildMiddlewares({ ownerId: config.ownerId });
+    for (const mw of middlewares) bot.use(mw);
+
+    const plugins: Plugin[] = buildCommandPlugins({ ownerId: config.ownerId, startedAtMs });
+    for (const plugin of plugins) plugin(bot);
+
     bot.catch((err: unknown): void => {
-        logger.error("(unhandled error)", err);
+        logger.error("(Unhandled error)", err);
     });
-    try {
-        logger.info("(bot started)", { mode: "polling" });
-        await bot.launch();
-    } catch (err) {
-        logger.error("(failed to start bot)", err);
-        process.exit(1);
-    }
+
+    logger.info("Bot launching...", { mode: "polling" });
+    await bot.launch();
+
     process.once("SIGINT", () => bot.stop("SIGINT"));
     process.once("SIGTERM", () => bot.stop("SIGTERM"));
 }
