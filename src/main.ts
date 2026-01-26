@@ -1,4 +1,4 @@
-import "./env.js";
+import "./env";
 import { Telegraf } from "telegraf";
 import { plugins } from "./bot/commands";
 import { botLogUpdates } from "./bot/middleware/log_updates";
