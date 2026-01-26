@@ -1,5 +1,5 @@
-import { BotCtx } from "../types";
 import type { MiddlewareFn } from "telegraf";
+import { BotCtx } from "@/bot/types";
 
 export function botRestrictToOwner(ownerId: number): MiddlewareFn<BotCtx> {
     return async (ctx: BotCtx, next: () => Promise<void>): Promise<void> => {

@@ -1,7 +1,7 @@
-import { log } from "../../logging";
-import { Logger } from "../../logging/logger";
-import { BotCtx } from "../types";
 import type { MiddlewareFn } from "telegraf";
+import { BotCtx } from "@/bot/types";
+import { log } from "@/logging";
+import { Logger } from "@/logging/logger";
 
 const logger: Logger = log.with({ module: "error_boundary" });
 

@@ -1,4 +1,4 @@
-import type { Plugin } from "../types";
+import type { Plugin } from "@/bot/types";
 
 export const pingPlugin: Plugin = (bot): void => {
     bot.command("ping", async (ctx): Promise<void> => {

@@ -1,7 +1,7 @@
 import { botErrorBoundary } from "./error_boundary";
 import { botLogUpdates } from "./log_updates";
 import { botRestrictToOwner } from "./restrict_to_owner";
-import type { BotCtx } from "../types";
+import type { BotCtx } from "@/bot/types";
 import type { MiddlewareFn } from "telegraf";
 
 export interface MiddlewareOptions {

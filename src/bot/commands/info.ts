@@ -1,4 +1,4 @@
-import type { Plugin } from "../types";
+import type { Plugin } from "@/bot/types";
 
 export const infoPlugin: Plugin = (bot): void => {
     bot.start(async (ctx): Promise<void> => {

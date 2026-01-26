@@ -1,7 +1,8 @@
-import { log } from "../../logging";
-import type { Plugin } from "../types";
+import type { Plugin } from "@/bot/types";
+import { log } from "@/logging";
+import { Logger } from "@/logging/logger";
 
-const logger = log.with({ module: "cmd_status" });
+const logger: Logger = log.with({ module: "cmd_status" });
 
 function formatBytes(bytes: number): string {
     const units: string[] = ["B", "KB", "MB", "GB", "TB"];

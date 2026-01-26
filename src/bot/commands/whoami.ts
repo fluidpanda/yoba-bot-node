@@ -1,7 +1,7 @@
-import type { Plugin } from "../types";
+import type { BotApi, Plugin } from "@/bot/types";
 import type { User } from "telegraf/types";
 
-export const whoamiPlugin: Plugin = (bot): void => {
+export const whoamiPlugin: Plugin = (bot: BotApi): void => {
     bot.command("whoami", async (ctx): Promise<void> => {
         const from: User | undefined = ctx.from;
         if (!from) {

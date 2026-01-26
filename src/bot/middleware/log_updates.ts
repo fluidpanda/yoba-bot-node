@@ -1,8 +1,8 @@
-import { log } from "../../logging";
-import { Logger } from "../../logging/logger";
-import { BotCtx } from "../types";
 import type { Context, MiddlewareFn } from "telegraf";
 import type { Update } from "telegraf/types";
+import { BotCtx } from "@/bot/types";
+import { log } from "@/logging";
+import { Logger } from "@/logging/logger";
 
 const logger: Logger = log.with({ module: "updates" });
 
