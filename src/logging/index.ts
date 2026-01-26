@@ -1,5 +1,5 @@
-import { LogLevel } from "./levels.js";
-import { createLogger, Logger } from "./logger.js";
+import { LogLevel } from "./levels";
+import { createLogger, Logger } from "./logger";
 
 const levels = new Set<LogLevel>(["debug", "info", "warn", "error"]);
 

@@ -1,7 +1,7 @@
-import { infoPlugin } from "./info.js";
-import { pingPlugin } from "./ping.js";
-import { rawPlugin } from "./raw.js";
-import { whoamiPlugin } from "./whoami.js";
-import type { Plugin } from "../types.js";
+import { infoPlugin } from "./info";
+import { pingPlugin } from "./ping";
+import { rawPlugin } from "./raw";
+import { whoamiPlugin } from "./whoami";
+import type { Plugin } from "../types";
 
 export const plugins: Plugin[] = [infoPlugin, pingPlugin, rawPlugin, whoamiPlugin];

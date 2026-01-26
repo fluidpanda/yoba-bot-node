@@ -1,4 +1,4 @@
-import type { Plugin } from "../types.js";
+import type { Plugin } from "../types";
 
 function safeJson(obj: unknown): string {
     return JSON.stringify(obj, null, 2);

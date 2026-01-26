@@ -1,4 +1,4 @@
-import type { LogLevel } from "./levels.js";
+import type { LogLevel } from "./levels";
 
 export interface LogRecord {
     ts: string;

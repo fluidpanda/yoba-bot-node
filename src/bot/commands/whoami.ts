@@ -1,4 +1,4 @@
-import type { Plugin } from "../types.js";
+import type { Plugin } from "../types";
 import type { User } from "telegraf/types";
 
 export const whoamiPlugin: Plugin = (bot): void => {

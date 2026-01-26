@@ -1,10 +1,10 @@
 import "./env.js";
 import { Telegraf } from "telegraf";
-import { plugins } from "./bot/commands/index.js";
-import { botLogUpdates } from "./bot/middleware/log_updates.js";
-import { botRestrictToOwner } from "./bot/middleware/restrict_to_owner.js";
-import { AppConfig, loadConfig } from "./config.js";
-import { log } from "./logging/index.js";
+import { plugins } from "./bot/commands";
+import { botLogUpdates } from "./bot/middleware/log_updates";
+import { botRestrictToOwner } from "./bot/middleware/restrict_to_owner";
+import { AppConfig, loadConfig } from "./config";
+import { log } from "./logging";
 import type { Context } from "telegraf";
 import type { Update } from "telegraf/types";
 

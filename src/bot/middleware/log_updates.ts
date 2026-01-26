@@ -1,4 +1,4 @@
-import { log } from "../../logging/index.js";
+import { log } from "../../logging";
 import type { Context, MiddlewareFn } from "telegraf";
 import type { Update } from "telegraf/types";
 
