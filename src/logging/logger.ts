@@ -19,7 +19,7 @@ function nowIso(): string {
     return new Date().toISOString();
 }
 
-function nomalizeError(err: unknown): Record<string, unknown> | undefined {
+function normalizeError(err: unknown): Record<string, unknown> | undefined {
     if (err instanceof Error) {
         return {
             error: err.message,
@@ -64,7 +64,7 @@ export function createLogger(opts: LoggerOptions): Logger {
         info: (msg: string, context): void => log("info", msg, context),
         warn: (msg: string, context): void => log("warn", msg, context),
         error: (msg: string, err: unknown, context): void => {
-            log("error", msg, { ...nomalizeError(err), ...context });
+            log("error", msg, { ...normalizeError(err), ...context });
         },
         with(extraContext: Record<string, unknown>): Logger {
             return createLogger({
