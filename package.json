@@ -4,8 +4,7 @@
     "description": "yoba tb bot",
     "main": "dist/main.js",
     "scripts": {
-        "build": "tsc",
-        "build:watch": "tsc -w",
+        "build": "tsup",
         "dev": "tsx watch src/main.ts"
     },
     "keywords": [],
@@ -19,6 +18,7 @@
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-import": "^2.32.0",
         "prettier": "^3.8.1",
+        "tsup": "^8.5.1",
         "tsx": "^4.21.0",
         "typescript-eslint": "^8.53.1"
     },
