@@ -1,5 +1,5 @@
 import "@/env";
-import { Telegraf } from "telegraf";
+import { MiddlewareFn, Telegraf } from "telegraf";
 import { buildCommandPlugins } from "@/bot/commands";
 import { buildMiddlewares } from "@/bot/middleware";
 import { BotCtx, Plugin } from "@/bot/types";
@@ -14,7 +14,7 @@ async function main(): Promise<void> {
     const config: AppConfig = loadConfig();
     const bot = new Telegraf<BotCtx>(config.botToken);
 
-    const middlewares = buildMiddlewares({ ownerId: config.ownerId });
+    const middlewares: MiddlewareFn<BotCtx>[] = buildMiddlewares({ ownerId: config.ownerId });
     for (const mw of middlewares) bot.use(mw);
 
     const plugins: Plugin[] = buildCommandPlugins({ ownerId: config.ownerId, startedAtMs });

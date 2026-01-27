@@ -11,7 +11,7 @@ export interface StatusOptions {
 }
 
 export function statusPlugin(opts: StatusOptions): Plugin {
-    return (bot): void => {
+    return (bot: BotApi): void => {
         bot.command("status", async (ctx): Promise<void> => {
             if (opts.ownerId !== null && ctx.from?.id !== opts.ownerId) {
                 await ctx.reply("Forbidden");

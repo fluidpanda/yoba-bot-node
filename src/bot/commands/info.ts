@@ -1,6 +1,6 @@
-import type { Plugin } from "@/bot/types";
+import type { BotApi, Plugin } from "@/bot/types";
 
-export const infoPlugin: Plugin = (bot): void => {
+export const infoPlugin: Plugin = (bot: BotApi): void => {
     bot.start(async (ctx): Promise<void> => {
         await ctx.reply("Command /ping, /raw, /whoami");
     });
