@@ -1,4 +1,5 @@
-import type { Plugin } from "@/bot/types";
+import type { BotApi, Plugin } from "@/bot/types";
+import { formatBytes } from "@/format";
 import { log } from "@/logging";
 import { Logger } from "@/logging/logger";
 

@@ -1,5 +1,5 @@
-import { formatLog } from "./format";
 import { LogLevel, LogLevelPriority } from "./levels";
+import { formatLog } from "@/format";
 
 export interface Logger {
     debug(msg: string, context?: Record<string, unknown>): void;

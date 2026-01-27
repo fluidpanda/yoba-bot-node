@@ -1,5 +1,6 @@
 import type { MiddlewareFn } from "telegraf";
 import { BotCtx } from "@/bot/types";
+import { formatJson } from "@/format";
 import { log } from "@/logging";
 import { Logger } from "@/logging/logger";
 
@@ -28,7 +29,7 @@ function formatErrorForOwner(err: unknown): string {
     }
     if (typeof err === "string") return err;
     try {
-        return JSON.stringify(err, null, 4);
+        return formatJson(err);
     } catch {
         return String(err);
     }
