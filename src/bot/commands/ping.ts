@@ -1,10 +1,15 @@
-import type { BotApi, BotCtx, Plugin } from "@/bot/types";
+import type { BotCommand } from "@/bot/commands";
+import type { BotCtx } from "@/bot/types";
 
-export const pingPlugin: Plugin = (bot: BotApi): void => {
-    bot.command("ping", async (ctx: BotCtx): Promise<void> => {
-        ctx.state.logger?.debug("Ping requested", {
-            text: ctx.text,
-        });
-        await ctx.reply("pong");
-    });
+export const pingCommand: BotCommand = {
+    name: "ping",
+    description: "Ping bot",
+    menu: {
+        label: "Ping",
+        action: "menu:ping",
+    },
+    async handler(ctx: BotCtx): Promise<void> {
+        ctx.state.logger?.debug("Ping requested");
+        await ctx.reply("Pong");
+    },
 };

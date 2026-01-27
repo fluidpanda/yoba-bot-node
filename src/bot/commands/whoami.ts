@@ -1,8 +1,15 @@
-import type { BotApi, BotCtx, Plugin } from "@/bot/types";
+import type { BotCommand } from "@/bot/commands";
+import type { BotCtx } from "@/bot/types";
 import type { User } from "telegraf/types";
 
-export const whoamiPlugin: Plugin = (bot: BotApi): void => {
-    bot.command("whoami", async (ctx: BotCtx): Promise<void> => {
+export const whoamiCommand: BotCommand = {
+    name: "whoami",
+    description: "Get who am I",
+    menu: {
+        label: "Who am I",
+        action: "menu:whoami",
+    },
+    async handler(ctx: BotCtx): Promise<void> {
         const from: User | undefined = ctx.from;
         if (!from) {
             ctx.state.logger?.info("Info requested, but no info", {
@@ -15,5 +22,5 @@ export const whoamiPlugin: Plugin = (bot: BotApi): void => {
             fromId: ctx.from?.id,
         });
         await ctx.reply(`id=${from.id}\nusername=${from.username ?? "-"}\nname=${from.first_name ?? "-"}`);
-    });
+    },
 };

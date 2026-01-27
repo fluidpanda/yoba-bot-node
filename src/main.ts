@@ -1,8 +1,8 @@
 import "@/env";
 import { MiddlewareFn, Telegraf } from "telegraf";
-import { buildCommandPlugins } from "@/bot/commands";
+import type { BotCtx } from "@/bot/types";
+import { BotCommand, buildCommands, commandsPlugin } from "@/bot/commands";
 import { buildMiddlewares } from "@/bot/middleware";
-import { BotCtx, Plugin } from "@/bot/types";
 import { AppConfig, loadConfig } from "@/config";
 import { log } from "@/logging";
 import { Logger } from "@/logging/logger";
@@ -17,8 +17,8 @@ async function main(): Promise<void> {
     const middlewares: MiddlewareFn<BotCtx>[] = buildMiddlewares({ ownerId: config.ownerId });
     for (const mw of middlewares) bot.use(mw);
 
-    const plugins: Plugin[] = buildCommandPlugins({ ownerId: config.ownerId, startedAtMs });
-    for (const plugin of plugins) plugin(bot);
+    const commands: BotCommand[] = buildCommands({ ownerId: config.ownerId, startedAtMs });
+    commandsPlugin(commands)(bot);
 
     bot.catch((err: unknown): void => {
         logger.error("(Unhandled error)", err);

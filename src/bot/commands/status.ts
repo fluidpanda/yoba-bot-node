@@ -1,4 +1,5 @@
-import type { BotApi, BotCtx, Plugin } from "@/bot/types";
+import type { BotCommand } from "@/bot/commands";
+import type { BotCtx } from "@/bot/types";
 import { formatBytes } from "@/format";
 
 export interface StatusOptions {
@@ -6,9 +7,15 @@ export interface StatusOptions {
     startedAtMs: number;
 }
 
-export function statusPlugin(opts: StatusOptions): Plugin {
-    return (bot: BotApi): void => {
-        bot.command("status", async (ctx: BotCtx): Promise<void> => {
+export function statusCommand(opts: StatusOptions): BotCommand {
+    return {
+        name: "status",
+        description: "Show bot status",
+        menu: {
+            label: "Status",
+            action: "menu:status",
+        },
+        async handler(ctx: BotCtx): Promise<void> {
             if (opts.ownerId !== null && ctx.from?.id !== opts.ownerId) {
                 await ctx.reply("Forbidden");
                 return;
@@ -28,6 +35,6 @@ export function statusPlugin(opts: StatusOptions): Plugin {
                 fromId: ctx.from?.id,
             });
             await ctx.reply(lines.join("\n"));
-        });
+        },
     };
 }
