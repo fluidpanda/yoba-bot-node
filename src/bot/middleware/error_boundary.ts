@@ -1,10 +1,6 @@
+import type { BotCtx } from "@/bot/types";
 import type { MiddlewareFn } from "telegraf";
-import { BotCtx } from "@/bot/types";
 import { formatJson } from "@/format";
-import { log } from "@/logging";
-import { Logger } from "@/logging/logger";
-
-const logger: Logger = log.with({ module: "error_boundary" });
 
 export interface ErrorBoundaryOptions {
     ownerId: number | null;
@@ -41,8 +37,7 @@ export function botErrorBoundary(opts: ErrorBoundaryOptions): MiddlewareFn<BotCt
             await next();
         } catch (err: unknown) {
             const cmd: string | null = extractCommand(ctx);
-
-            logger.error("Unhandled middleware error", err, {
+            ctx.state.logger?.error("Unhandled middleware error", err, {
                 updateType: ctx.updateType,
                 command: cmd ?? undefined,
                 fromId: ctx.from?.id,
