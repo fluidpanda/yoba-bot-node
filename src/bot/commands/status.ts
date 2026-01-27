@@ -1,9 +1,5 @@
-import type { BotApi, Plugin } from "@/bot/types";
+import type { BotApi, BotCtx, Plugin } from "@/bot/types";
 import { formatBytes } from "@/format";
-import { log } from "@/logging";
-import { Logger } from "@/logging/logger";
-
-const logger: Logger = log.with({ module: "cmd_status" });
 
 export interface StatusOptions {
     ownerId: number | null;
@@ -12,7 +8,7 @@ export interface StatusOptions {
 
 export function statusPlugin(opts: StatusOptions): Plugin {
     return (bot: BotApi): void => {
-        bot.command("status", async (ctx): Promise<void> => {
+        bot.command("status", async (ctx: BotCtx): Promise<void> => {
             if (opts.ownerId !== null && ctx.from?.id !== opts.ownerId) {
                 await ctx.reply("Forbidden");
                 return;
@@ -28,7 +24,9 @@ export function statusPlugin(opts: StatusOptions): Plugin {
                 `rss=${formatBytes(mem.rss)}`,
                 `heapUsed=${formatBytes(mem.heapUsed)}`,
             ];
-            logger.info("Status requested", { fromId: ctx.from?.id });
+            ctx.state.logger?.info("Status requested", {
+                fromId: ctx.from?.id,
+            });
             await ctx.reply(lines.join("\n"));
         });
     };
