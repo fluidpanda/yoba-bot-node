@@ -4,6 +4,7 @@
     "description": "yoba tb bot",
     "main": "dist/main.js",
     "scripts": {
+        "lint": "eslint --fix .",
         "build": "tsup",
         "dev": "tsx watch src/main.ts"
     },
