@@ -1,4 +1,5 @@
-import { LogLevel, LogLevelPriority } from "./levels";
+import { LogLevelPriority } from "./levels";
+import type { LogLevel} from "./levels";
 import { formatLog } from "@/format";
 
 export interface Logger {

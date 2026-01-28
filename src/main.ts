@@ -1,11 +1,14 @@
 import "@/env";
-import { MiddlewareFn, Telegraf } from "telegraf";
+import { Telegraf } from "telegraf";
+import type { BotCommand} from "@/bot/commands";
 import type { BotCtx } from "@/bot/types";
-import { BotCommand, buildCommands, commandsPlugin } from "@/bot/commands";
+import type { AppConfig} from "@/config";
+import type { Logger } from "@/logging/logger";
+import type { MiddlewareFn} from "telegraf";
+import { buildCommands, commandsPlugin } from "@/bot/commands";
 import { buildMiddlewares } from "@/bot/middleware";
-import { AppConfig, loadConfig } from "@/config";
+import { loadConfig } from "@/config";
 import { log } from "@/logging";
-import { Logger } from "@/logging/logger";
 
 const logger: Logger = log.with({ module: "main" });
 

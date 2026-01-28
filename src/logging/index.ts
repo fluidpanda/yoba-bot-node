@@ -1,5 +1,6 @@
-import { LogLevel } from "./levels";
-import { createLogger, Logger } from "./logger";
+import { createLogger } from "./logger";
+import type { LogLevel } from "./levels";
+import type { Logger } from "./logger";
 
 const levels = new Set<LogLevel>(["debug", "info", "warn", "error"]);
 
