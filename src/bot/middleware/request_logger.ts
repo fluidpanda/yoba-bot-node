@@ -15,6 +15,7 @@ function makeUpdateId(ctx: BotCtx): string {
 
 export const botRequestLogger: MiddlewareFn<BotCtx> = async (ctx: BotCtx, next: () => Promise<void>): Promise<void> => {
     const updateId: string = makeUpdateId(ctx);
+    const t0: number = Date.now();
     ctx.state.updateId = updateId;
     ctx.state.logger = log.with({
         updateId,
@@ -25,7 +26,13 @@ export const botRequestLogger: MiddlewareFn<BotCtx> = async (ctx: BotCtx, next: 
     });
     try {
         await next();
-    } finally {
-        ctx.state.logger.debug("Update finished");
+        ctx.state.logger.debug("Update finished", {
+            elapsedMs: Date.now() - t0,
+        });
+    } catch (err: unknown) {
+        ctx.state.logger.error("Update failed", err, {
+            elapsedMs: Date.now() - t0,
+        });
+        throw err;
     }
 };
