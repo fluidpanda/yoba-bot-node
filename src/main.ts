@@ -1,10 +1,10 @@
 import "@/env";
 import { Telegraf } from "telegraf";
-import type { BotCommand} from "@/bot/commands";
+import type { BotCommand } from "@/bot/commands";
 import type { BotCtx } from "@/bot/types";
-import type { AppConfig} from "@/config";
+import type { AppConfig } from "@/config";
 import type { Logger } from "@/logging/logger";
-import type { MiddlewareFn} from "telegraf";
+import type { MiddlewareFn } from "telegraf";
 import { buildCommands, commandsPlugin } from "@/bot/commands";
 import { buildMiddlewares } from "@/bot/middleware";
 import { loadConfig } from "@/config";
