@@ -25,7 +25,7 @@ function formatErrorForOwner(err: unknown): string {
     }
     if (typeof err === "string") return err;
     try {
-        return formatJson(err);
+        return formatJson(err, 2);
     } catch {
         return String(err);
     }
