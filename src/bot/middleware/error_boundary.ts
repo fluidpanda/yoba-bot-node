@@ -1,6 +1,6 @@
 import type { BotCtx } from "@/bot/types";
 import type { MiddlewareFn } from "telegraf";
-import { formatJson } from "@/format";
+import { formatJson } from "@/logging/utils";
 
 export interface ErrorBoundaryOptions {
     ownerId: number | null;

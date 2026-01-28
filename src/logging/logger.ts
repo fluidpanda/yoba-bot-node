@@ -1,7 +1,7 @@
 import { LogLevelPriority } from "./levels";
 import type { LogLevel } from "./levels";
-import type { LogRecord } from "@/format";
-import { formatLog } from "@/format";
+import type { LogRecord } from "@/logging/utils";
+import { formatLog } from "@/logging/utils";
 
 export interface Logger {
     debug(msg: string, context?: Record<string, unknown>): void;
