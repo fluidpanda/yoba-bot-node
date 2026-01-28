@@ -12,7 +12,11 @@ export function formatBytes(bytes: number): string {
 }
 
 export function formatJson(value: unknown, spaces?: number): string {
-    return JSON.stringify(value, null, spaces ?? 4);
+    return JSON.stringify(value, null, spaces);
+}
+
+export function formatJsonPretty(value: unknown): string {
+    return formatJson(value, 4);
 }
 
 export interface LogRecord {
@@ -24,8 +28,9 @@ export interface LogRecord {
 
 export function formatLog(rec: LogRecord): string {
     const base = `${rec.ts} ${rec.level.toUpperCase()}: ${rec.msg}`;
-    if (!rec.context) {
+    const ctx = rec.context;
+    if (!ctx || Object.keys(ctx).length === 0) {
         return base;
     }
-    return `${base} ${formatJson(rec.context)}`;
+    return `${base} ${formatJson(ctx)}`;
 }
