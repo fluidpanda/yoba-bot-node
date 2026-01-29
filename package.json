@@ -4,7 +4,7 @@
     "description": "yoba tb bot",
     "main": "dist/main.js",
     "scripts": {
-        "lint": "eslint --fix .",
+        "lint": "eslint --fix . && prettier --write .",
         "build": "tsup",
         "dev": "tsx watch src/main.ts"
     },
