@@ -1,6 +1,6 @@
 import type { BotCommand } from "@/bot/commands";
 import type { BotCtx } from "@/bot/types";
-import { formatJson } from "@/format";
+import { formatJson } from "@/logging/utils";
 
 export const rawCommand: BotCommand = {
     name: "raw",
