@@ -3,6 +3,15 @@ import type { BotCtx } from "@/bot/types";
 import type { Telegraf } from "telegraf";
 import { withMainMenu } from "@/bot/menu/keyboard";
 
+export type MenuId = "main" | "tools";
+
+export interface MenuConfig {
+    menus: Record<MenuId, readonly MenuCommand[]>;
+    columnsByMenu: Record<MenuId, number>;
+    getMenuId(ctx: BotCtx): MenuId;
+    setMenuId(ctx: BotCtx, menu: MenuId): void;
+}
+
 function getMessageText(ctx: BotCtx): string | null {
     const msg = ctx.message;
     if (!msg) return null;
@@ -25,53 +34,42 @@ function runFactory(replyWithMenu: (ctx: BotCtx, text: string) => Promise<void>)
     };
 }
 
-export function registerMenu(bot: Telegraf<BotCtx>, commands: readonly MenuCommand[], columns: number): void {
-    async function replyWithMenu(ctx: BotCtx, text: string): Promise<void> {
-        await ctx.reply(text, withMainMenu(commands, columns));
-    }
-    const run = runFactory(replyWithMenu);
-
-    bot.start(async (ctx: BotCtx): Promise<void> => {
-        await run(ctx, async (): Promise<void> => {
-            await replyWithMenu(ctx, "All commands");
-        });
-    });
-
-    const labels = commands.map((c) => c.label);
-    bot.hears(labels, async (ctx: BotCtx): Promise<void> => {
-        await run(ctx, async (): Promise<void> => {
-            const text = getMessageText(ctx);
-            if (!text) {
-                await replyWithMenu(ctx, "Unknown command");
-                return;
-            }
-
-            const cmd = commands.find((c) => c.label === text);
-            if (!cmd) {
-                await replyWithMenu(ctx, "Unknown command");
-                return;
-            }
-
-            await cmd.handler(ctx);
-        });
-    });
-
-    for (const c of commands) {
-        if (!c.command) continue;
-        bot.command(c.command, async (ctx: BotCtx): Promise<void> => {
-            await run(ctx, async (): Promise<void> => {
-                await c.handler(ctx);
-            });
-        });
-    }
-
+function buildTriggerMap(commands: readonly MenuCommand[]): Map<string, MenuCommand> {
     const triggerMap = new Map<string, MenuCommand>();
     for (const c of commands) {
         for (const t of c.triggers) {
             triggerMap.set(normalizeFreeText(t), c);
         }
     }
+    return triggerMap;
+}
 
+export function registerMenu(bot: Telegraf<BotCtx>, config: MenuConfig): void {
+    function commandsFor(ctx: BotCtx): readonly MenuCommand[] {
+        return config.menus[config.getMenuId(ctx)];
+    }
+    function columnsFor(ctx: BotCtx): number {
+        return config.columnsByMenu[config.getMenuId(ctx)];
+    }
+    async function replyWithMenu(ctx: BotCtx, text: string): Promise<void> {
+        const commands = commandsFor(ctx);
+        const columns = columnsFor(ctx);
+        await ctx.reply(text, withMainMenu(commands, columns));
+    }
+    bot.use(async (ctx: BotCtx, next: () => Promise<void>): Promise<void> => {
+        ctx.state.replyWithMenu = async (text: string): Promise<void> => {
+            await replyWithMenu(ctx, text);
+        };
+        await next();
+    });
+
+    const run = runFactory(replyWithMenu);
+    bot.start(async (ctx: BotCtx): Promise<void> => {
+        config.setMenuId(ctx, "main");
+        await run(ctx, async (): Promise<void> => {
+            await replyWithMenu(ctx, "All commands");
+        });
+    });
     bot.hears(/.*/, async (ctx: BotCtx): Promise<void> => {
         await run(ctx, async (): Promise<void> => {
             const raw = getMessageText(ctx);
@@ -79,15 +77,29 @@ export function registerMenu(bot: Telegraf<BotCtx>, commands: readonly MenuComma
                 await replyWithMenu(ctx, "Unknown command");
                 return;
             }
-
-            const key = normalizeFreeText(raw);
-            const cmd = triggerMap.get(key);
-            if (!cmd) {
-                await replyWithMenu(ctx, "Unknown command");
+            const commands = commandsFor(ctx);
+            const byLabel = commands.find((c) => c.label === raw);
+            if (byLabel) {
+                await byLabel.handler(ctx);
                 return;
             }
-
-            await cmd.handler(ctx);
+            const triggerMap = buildTriggerMap(commands);
+            const key = normalizeFreeText(raw);
+            const byTrigger = triggerMap.get(key);
+            if (byTrigger) {
+                await byTrigger.handler(ctx);
+                return;
+            }
+            await replyWithMenu(ctx, "Unknown command");
         });
     });
+    const allCommands: MenuCommand[] = [...config.menus.main, ...config.menus.tools];
+    for (const c of allCommands) {
+        if (!c.command) continue;
+        bot.command(c.command, async (ctx: BotCtx): Promise<void> => {
+            await run(ctx, async (): Promise<void> => {
+                await c.handler(ctx);
+            });
+        });
+    }
 }

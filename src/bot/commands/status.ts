@@ -22,18 +22,18 @@ export function statusCommand(opts: StatusOptions): MenuCommand {
             const uptimeSec: number = Math.floor((Date.now() - opts.startedAtMs) / 1000);
             const mem = process.memoryUsage();
             const lines: string[] = [
-                `ok=true`,
-                `pid=${process.pid}`,
-                `node=${process.version}`,
-                `platform=${process.platform}`,
-                `uptime=${uptimeSec}`,
-                `rss=${formatBytes(mem.rss)}`,
-                `heapUsed=${formatBytes(mem.heapUsed)}`,
+                `ok=<code>true</code>`,
+                `pid=<code>${process.pid}</code>`,
+                `node=<code>${process.version}</code>`,
+                `platform=<code>${process.platform}</code>`,
+                `uptime=<code>${uptimeSec}</code>`,
+                `rss=<code>${formatBytes(mem.rss)}</code>`,
+                `heapUsed=<code>${formatBytes(mem.heapUsed)}</code>`,
             ];
             ctx.state.logger?.info("Status requested", {
                 fromId: ctx.from?.id,
             });
-            await ctx.reply(lines.join("\n"));
+            await ctx.reply(lines.join("\n"), { parse_mode: "HTML" });
         },
     };
 }
