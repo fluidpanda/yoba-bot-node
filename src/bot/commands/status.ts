@@ -1,4 +1,4 @@
-import type { BotCommand } from "@/bot/commands";
+import type { MenuCommand } from "@/bot/menu";
 import type { BotCtx } from "@/bot/types";
 import { formatBytes } from "@/format";
 
@@ -7,14 +7,13 @@ export interface StatusOptions {
     startedAtMs: number;
 }
 
-export function statusCommand(opts: StatusOptions): BotCommand {
+export function statusCommand(opts: StatusOptions): MenuCommand {
     return {
-        name: "status",
+        id: "status",
+        label: "Status",
         description: "Show bot status",
-        menu: {
-            label: "Status",
-            action: "menu:status",
-        },
+        triggers: ["Status", "/status"],
+        command: "status",
         async handler(ctx: BotCtx): Promise<void> {
             if (opts.ownerId !== null && ctx.from?.id !== opts.ownerId) {
                 await ctx.reply("Forbidden");
