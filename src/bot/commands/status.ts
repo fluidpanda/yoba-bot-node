@@ -30,9 +30,6 @@ export function statusCommand(opts: StatusOptions): MenuCommand {
                 `rss=<code>${formatBytes(mem.rss)}</code>`,
                 `heapUsed=<code>${formatBytes(mem.heapUsed)}</code>`,
             ];
-            ctx.state.logger?.info("Status requested", {
-                fromId: ctx.from?.id,
-            });
             await ctx.reply(lines.join("\n"), { parse_mode: "HTML" });
         },
     };

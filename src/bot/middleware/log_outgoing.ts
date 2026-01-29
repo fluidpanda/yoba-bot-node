@@ -18,7 +18,7 @@ export const botLogOutgoingReply: MiddlewareFn<BotCtx> = async (
     (ctx as unknown as { reply: typeof ctx.reply }).reply = async (...args) => {
         const raw: LoggableText = asLoggableText(args[0]);
         const text: string = raw === null ? "" : String(raw);
-        ctx.state.logger?.debug("Reply body:", { text: truncateText(text, 300) });
+        ctx.state.logger?.debug("REPLY:BODY:", { text: truncateText(text, 300) });
         return originalReply(...args);
     };
     await next();

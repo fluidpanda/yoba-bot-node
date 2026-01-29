@@ -21,16 +21,16 @@ export const botRequestLogger: MiddlewareFn<BotCtx> = async (ctx: BotCtx, next: 
         updateId,
         fromId: ctx.from?.id,
     });
-    ctx.state.logger.debug("Update started", {
+    ctx.state.logger.debug("UPD:START", {
         type: ctx.updateType,
     });
     try {
         await next();
-        ctx.state.logger.debug("Update finished", {
+        ctx.state.logger.debug("UPD:FIN", {
             elapsedMs: Date.now() - t0,
         });
     } catch (err: unknown) {
-        ctx.state.logger.error("Update failed", err, {
+        ctx.state.logger.error("UPD:FAIL", err, {
             elapsedMs: Date.now() - t0,
         });
         throw err;
