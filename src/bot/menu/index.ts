@@ -24,6 +24,9 @@ export function buildMenuCommands(deps: MenuDeps): readonly MenuCommand[] {
             triggers: ["Ping", "/ping"],
             command: "ping",
             handler: async (ctx: BotCtx): Promise<void> => {
+                ctx.state.logger?.info("Pong requested", {
+                    fromId: ctx.from?.id,
+                });
                 await ctx.reply(`Pong`);
             },
         },
@@ -34,11 +37,14 @@ export function buildMenuCommands(deps: MenuDeps): readonly MenuCommand[] {
             triggers: [],
             command: "whoami",
             handler: async (ctx: BotCtx): Promise<void> => {
+                ctx.state.logger?.info("Id requested", {
+                    fromId: ctx.from?.id,
+                });
                 await ctx.reply(`Your id: ${ctx.from?.id ?? "unknown"}`);
             },
         },
         (() => {
-            const status = statusCommand(deps.status);
+            const status: MenuCommand = statusCommand(deps.status);
             return {
                 id: status.id,
                 label: status.label,
