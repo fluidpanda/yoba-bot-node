@@ -25,9 +25,9 @@ function runFactory(replyWithMenu: (ctx: BotCtx, text: string) => Promise<void>)
     };
 }
 
-export function registerMenu(bot: Telegraf<BotCtx>, commands: readonly MenuCommand[]): void {
+export function registerMenu(bot: Telegraf<BotCtx>, commands: readonly MenuCommand[], columns: number): void {
     async function replyWithMenu(ctx: BotCtx, text: string): Promise<void> {
-        await ctx.reply(text, withMainMenu(commands));
+        await ctx.reply(text, withMainMenu(commands, columns));
     }
     const run = runFactory(replyWithMenu);
 

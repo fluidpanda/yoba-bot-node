@@ -30,7 +30,7 @@ async function main(): Promise<void> {
         logger.error("(Unhandled error)", err);
     });
 
-    registerMenu(bot, menuCommands);
+    registerMenu(bot, menuCommands, 3);
 
     logger.info("Bot launching...", { mode: "polling" });
     await bot.launch();
