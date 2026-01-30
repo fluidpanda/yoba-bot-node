@@ -1,6 +1,6 @@
 import type { MenuCommand } from "@/bot/menu";
 import type { BotCtx } from "@/bot/types";
-import { formatBytes } from "@/format";
+import { formatBytes, formatMs } from "@/format";
 
 export interface StatusOptions {
     ownerId: number | null;
@@ -19,14 +19,14 @@ export function statusCommand(opts: StatusOptions): MenuCommand {
                 await ctx.reply("Forbidden");
                 return;
             }
-            const uptimeSec: number = Math.floor((Date.now() - opts.startedAtMs) / 1000);
+            const uptime: string = formatMs(Date.now() - opts.startedAtMs);
             const mem = process.memoryUsage();
             const lines: string[] = [
                 `ok=<code>true</code>`,
                 `pid=<code>${process.pid}</code>`,
                 `node=<code>${process.version}</code>`,
-                `platform=<code>${process.platform}</code>`,
-                `uptime=<code>${uptimeSec}</code>`,
+                `platform=<code>${process.platform}-${process.arch}</code>`,
+                `uptime=<code>${uptime}</code>`,
                 `rss=<code>${formatBytes(mem.rss)}</code>`,
                 `heapUsed=<code>${formatBytes(mem.heapUsed)}</code>`,
             ];
