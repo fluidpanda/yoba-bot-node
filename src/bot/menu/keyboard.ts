@@ -1,5 +1,5 @@
 import { Markup } from "telegraf";
-import type { MenuCommand } from "@/bot/menu/index";
+import type { MenuCommand } from "@/bot/menu";
 
 export function buildMainMenuKeyboard(commands: readonly MenuCommand[], columns: number) {
     const rows: string[][] = [];

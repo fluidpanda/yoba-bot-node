@@ -1,4 +1,4 @@
-import type { MenuCommand } from "@/bot/menu/index";
+import type { MenuCommand } from "@/bot/menu";
 import type { BotCtx } from "@/bot/types";
 import type { Telegraf } from "telegraf";
 import { withMainMenu } from "@/bot/menu/keyboard";
