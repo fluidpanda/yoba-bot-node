@@ -9,7 +9,6 @@ export interface Logger {
     warn(msg: string, context?: Record<string, unknown>): void;
     error(msg: string, context?: Record<string, unknown>): void;
     error(msg: string, err?: unknown, context?: Record<string, unknown>): void;
-
     with(context: Record<string, unknown>): Logger;
 }
 
@@ -97,9 +96,9 @@ export function createLogger(opts: LoggerOptions): Logger {
         emit("error", msg, { ...normalizeError(a), ...(b ?? {}) });
     }
     return {
-        debug: (msg: string, context: Record<string, unknown>): void => emit("debug", msg, context),
-        info: (msg: string, context: Record<string, unknown>): void => emit("info", msg, context),
-        warn: (msg: string, context: Record<string, unknown>): void => emit("warn", msg, context),
+        debug: (msg: string, context?: Record<string, unknown>): void => emit("debug", msg, context),
+        info: (msg: string, context?: Record<string, unknown>): void => emit("info", msg, context),
+        warn: (msg: string, context?: Record<string, unknown>): void => emit("warn", msg, context),
         error: (msg: string, a?: unknown, b?: Record<string, unknown>): void => errorImpl(msg, a, b),
         with(extraContext: Record<string, unknown>): Logger {
             return createLogger({
