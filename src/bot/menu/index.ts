@@ -1,6 +1,8 @@
 import type { StatusOptions } from "@/bot/commands/status";
 import type { MenuId } from "@/bot/menu/register";
 import type { BotCtx } from "@/bot/types";
+import type { RoutersConfig } from "@/routers/config";
+import { createRouterHandler } from "@/bot/commands/router";
 import { statusCommand } from "@/bot/commands/status";
 
 export interface MenuCommand {
@@ -14,6 +16,7 @@ export interface MenuCommand {
 
 export interface MenuDeps {
     status: StatusOptions;
+    routers: RoutersConfig;
 }
 
 function attachCommandLogging(cmds: readonly MenuCommand[]): readonly MenuCommand[] {
@@ -32,8 +35,8 @@ export function buildMenus(deps: MenuDeps): Record<MenuId, readonly MenuCommand[
             id: "ping",
             label: "Ping",
             description: "Ping",
-            triggers: ["Ping", "/ping"],
-            command: "ping",
+            triggers: ["Super", "/super"],
+            command: "",
             handler: async (ctx: BotCtx): Promise<void> => {
                 await ctx.reply(`Pong!`);
             },
@@ -75,11 +78,19 @@ export function buildMenus(deps: MenuDeps): Record<MenuId, readonly MenuCommand[
             id: "yoba_tool",
             description: "yoba tools test",
             label: "Yoba Tool",
-            triggers: ["yoba tool", "yoba"],
+            triggers: ["yoba_tool", "yoba"],
             command: "yoba_tool",
             handler: async (ctx: BotCtx): Promise<void> => {
                 await ctx.reply(`Yoba tool reply`);
             },
+        },
+        {
+            id: "router",
+            label: "Router",
+            description: "Router actions via Ssh",
+            triggers: ["Router", "/router", "/r"],
+            command: "r",
+            handler: createRouterHandler({ routers: deps.routers }),
         },
         {
             id: "back_to_main",

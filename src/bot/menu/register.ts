@@ -72,19 +72,34 @@ export function registerMenu(bot: Telegraf<BotCtx>, config: MenuConfig): void {
     });
     bot.hears(/.*/, async (ctx: BotCtx): Promise<void> => {
         await run(ctx, async (): Promise<void> => {
-            const raw = getMessageText(ctx);
+            const raw: string | null = getMessageText(ctx);
             if (!raw) {
                 await replyWithMenu(ctx, "Unknown command");
                 return;
             }
-            const commands = commandsFor(ctx);
+
+            const firstToken: string = raw.trim().split(/\s+/g)[0] ?? raw;
+            const key: string = normalizeFreeText(firstToken);
+
+            const allCommands: readonly MenuCommand[] = [...config.menus.main, ...config.menus.tools];
+            if (firstToken.startsWith("/")) {
+                const globalTriggerMap: Map<string, MenuCommand> = buildTriggerMap(allCommands);
+                const global = globalTriggerMap.get(key);
+                if (global) {
+                    await global.handler(ctx);
+                    return;
+                }
+            }
+
+            const commands: readonly MenuCommand[] = commandsFor(ctx);
+
             const byLabel = commands.find((c) => c.label === raw);
             if (byLabel) {
                 await byLabel.handler(ctx);
                 return;
             }
-            const triggerMap = buildTriggerMap(commands);
-            const key = normalizeFreeText(raw);
+
+            const triggerMap: Map<string, MenuCommand> = buildTriggerMap(commands);
             const byTrigger = triggerMap.get(key);
             if (byTrigger) {
                 await byTrigger.handler(ctx);

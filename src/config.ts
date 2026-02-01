@@ -3,7 +3,7 @@ export interface AppConfig {
     ownerId: number | null;
 }
 
-function requireEnv(name: string): string {
+export function requireEnv(name: string): string {
     const value: string | undefined = process.env[name];
     if (!value) {
         throw new Error(`Missing required .env var: ${name}`);
@@ -11,7 +11,7 @@ function requireEnv(name: string): string {
     return value;
 }
 
-function envInt(name: string): number | null {
+export function envInt(name: string): number | null {
     const value: string | undefined = process.env[name];
     if (!value) return null;
     const n: number = Number(value);
