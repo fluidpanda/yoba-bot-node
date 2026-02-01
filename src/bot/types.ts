@@ -11,8 +11,8 @@ export type BotCtx = Context<Update> & {
     session: BotSession;
     state: {
         logger?: Logger;
-        updateId?: string;
         replyWithMenu?: (text: string) => Promise<void>;
+        updateId?: string;
     };
 };
 export type BotApi = Composer<BotCtx>;
