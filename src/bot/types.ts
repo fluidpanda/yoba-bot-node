@@ -1,6 +1,6 @@
 import type { MenuId } from "@/bot/menu/register";
 import type { Logger } from "@/logging/logger";
-import type { Composer, Context } from "telegraf";
+import type { Context } from "telegraf";
 import type { Update } from "telegraf/types";
 
 export interface BotSession {
@@ -15,4 +15,3 @@ export type BotCtx = Context<Update> & {
         updateId?: string;
     };
 };
-export type BotApi = Composer<BotCtx>;
