@@ -8,12 +8,14 @@ export interface BotSession {
     menu?: MenuId;
 }
 
+export interface BotState {
+    config?: AppConfig;
+    logger?: Logger;
+    replyWithMenu?: (text: string) => Promise<void>;
+    updateId?: string;
+}
+
 export type BotCtx = Context<Update> & {
     session: BotSession;
-    state: {
-        config: AppConfig;
-        logger?: Logger;
-        replyWithMenu?: (text: string) => Promise<void>;
-        updateId?: string;
-    };
+    state: BotState;
 };
