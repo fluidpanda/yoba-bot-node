@@ -2,7 +2,7 @@ import type { RouterConfig } from "@/routers/config";
 import type { SshExecResult } from "@/routers/ssh";
 import { sshExec } from "@/routers/ssh";
 
-export type RouterActionId = "health" | "ips";
+export type RouterActionId = "health" | "ips" | "routes";
 
 export interface RouterAction {
     id: RouterActionId;
@@ -12,7 +12,7 @@ export interface RouterAction {
 }
 
 function formatResult(title: string, body: string): string {
-    return `<b>${title}</b>\n<pre>${body}</pre>`;
+    return `<b>${title}</b>\n<code>${body}</code>`;
 }
 
 export const ROUTER_ACTIONS: readonly RouterAction[] = [
@@ -24,18 +24,29 @@ export const ROUTER_ACTIONS: readonly RouterAction[] = [
             const cmd = "/system/resource/print";
             const r: SshExecResult = await sshExec(router, cmd, { timeoutMs: 10_000, maxOutputChars: 12_000 });
             const body: string = r.timedOut ? "Timed out" : [r.stdout, r.stderr].filter(Boolean).join("\n");
-            return formatResult(`${router.label} - health`, body || "no output");
+            return formatResult(`${router.label} - Health`, body || "no output");
         },
     },
     {
         id: "ips",
-        label: "IPs",
+        label: "Ips",
         description: "Interfaces addresses",
         run: async (router: RouterConfig): Promise<string> => {
             const cmd = "/ip/address/print";
             const r: SshExecResult = await sshExec(router, cmd, { timeoutMs: 10_000, maxOutputChars: 12_000 });
             const body: string = r.timedOut ? "Timed out" : [r.stdout, r.stderr].filter(Boolean).join("\n");
-            return formatResult(`${router.label} - ips`, body || "no output");
+            return formatResult(`${router.label} - Interfaces`, body || "no output");
+        },
+    },
+    {
+        id: "routes",
+        label: "Routes",
+        description: "Show routes",
+        run: async (router: RouterConfig): Promise<string> => {
+            const cmd = "/ip/route/print";
+            const r: SshExecResult = await sshExec(router, cmd, { timeoutMs: 10_000, maxOutputChars: 12_000 });
+            const body: string = r.timedOut ? "Timed out" : [r.stdout, r.stderr].filter(Boolean).join("\n");
+            return formatResult(`${router.label} - Routes`, body || "no output");
         },
     },
 ];

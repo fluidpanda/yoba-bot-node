@@ -51,7 +51,7 @@ async function main(): Promise<void> {
 
     registerMenu(bot, {
         menus,
-        columnsByMenu: { main: 4, tools: 4 },
+        columnsByMenu: { main: 4, tools: 4, routers: 4, router_actions: 4 },
         getMenuId: (ctx: BotCtx): MenuId => ctx.session.menu ?? "main",
         setMenuId: (ctx: BotCtx, menu: MenuId): void => {
             ctx.session.menu = menu;

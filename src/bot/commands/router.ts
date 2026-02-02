@@ -20,39 +20,49 @@ function findAction(id: string): RouterActionId | undefined {
         : undefined;
 }
 
+function parseRouterArgs(ctx: BotCtx): { routerId?: string; actionIdRaw?: string } {
+    const msg = ctx.message;
+    if (msg && "text" in msg) {
+        const text: string = msg.text.trim();
+        if (!text) return {};
+        const parts: string[] = text.split(/\s+/g).filter(Boolean);
+        const cmd: string = (parts[0] ?? "").split("@")[0];
+        if (cmd !== "/r" && cmd !== "/router") return {};
+        return { routerId: parts[1], actionIdRaw: parts[2] };
+    }
+    const anyCtx = ctx as unknown as { payload?: unknown };
+    const payload: string = typeof anyCtx.payload === "string" ? anyCtx.payload.trim() : "";
+    if (!payload) return {};
+    const parts: string[] = payload.split(/\s+/g).filter(Boolean);
+    return { routerId: parts[0], actionIdRaw: parts[1] };
+}
+
 export function createRouterHandler(deps: { routers: RoutersConfig }) {
     return async (ctx: BotCtx): Promise<void> => {
         if (!isOwner(ctx)) {
             await ctx.reply("Access denied");
             return;
         }
-
-        const text: string = ctx.message && "text" in ctx.message ? ctx.message.text : "";
-        const parts: string[] = text.trim().split(/\s+/g).filter(Boolean);
-        if (parts.length < 3) {
-            const routersList: string = deps.routers.routers
-                .map((router: RouterConfig): string => `${router.id} - ${router.label}`)
-                .join("\n");
-            const actionsList: string = ROUTER_ACTIONS.map((a: RouterAction): string => `${a.id} - ${a.label}`).join(
-                "\n",
-            );
-            await ctx.reply(
-                `<b>Usage</b>\n<pre>/r routerId action\nRouters:\n${routersList}\nActions:\n${actionsList}</pre>`,
-                { parse_mode: "HTML" },
-            );
+        const { routerId, actionIdRaw } = parseRouterArgs(ctx);
+        if (!routerId) {
+            ctx.session.routerId = undefined;
+            ctx.session.menu = "routers";
+            await ctx.state.replyWithMenu?.("Select router");
             return;
         }
-
-        const routerId: string = parts[1];
-        const actionIdRaw: string = parts[2];
         const router: RouterConfig | undefined = findRouter(deps.routers, routerId);
-        const actionId: RouterActionId | undefined = findAction(actionIdRaw);
-        const action: RouterAction | undefined = ROUTER_ACTIONS.find((a: RouterAction): boolean => a.id === actionId);
         if (!router) {
             await ctx.reply(`Unknown router: <code>${routerId}</code>`, { parse_mode: "HTML" });
             return;
         }
-
+        if (!actionIdRaw) {
+            ctx.session.routerId = router.id;
+            ctx.session.menu = "router_actions";
+            await ctx.state.replyWithMenu?.(`Router: ${router.label}\nChoose action`);
+            return;
+        }
+        const actionId: RouterActionId | undefined = findAction(actionIdRaw);
+        const action: RouterAction | undefined = ROUTER_ACTIONS.find((a: RouterAction): boolean => a.id === actionId);
         if (!action) {
             await ctx.reply(`Unknown action: <code>${actionIdRaw}</code>`, { parse_mode: "HTML" });
             return;
@@ -67,7 +77,7 @@ export function createRouterHandler(deps: { routers: RoutersConfig }) {
             const out = await action.run(router);
             await ctx.reply(out, { parse_mode: "HTML" });
         } catch (err) {
-            ctx.state.logger?.error("Router action failed", err, { routerId: router.id, actionId: action?.id });
+            ctx.state.logger?.error("Router action failed", err, { routerId: router.id, actionId: action.id });
             await ctx.reply("Failed to execute router action");
         }
     };

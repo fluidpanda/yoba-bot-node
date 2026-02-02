@@ -3,7 +3,7 @@ import type { BotCtx } from "@/bot/types";
 import type { Telegraf } from "telegraf";
 import { withMainMenu } from "@/bot/menu/keyboard";
 
-export type MenuId = "main" | "tools";
+export type MenuId = "main" | "tools" | "routers" | "router_actions";
 
 export interface MenuConfig {
     menus: Record<MenuId, readonly MenuCommand[]>;
@@ -81,7 +81,12 @@ export function registerMenu(bot: Telegraf<BotCtx>, config: MenuConfig): void {
             const firstToken: string = raw.trim().split(/\s+/g)[0] ?? raw;
             const key: string = normalizeFreeText(firstToken);
 
-            const allCommands: readonly MenuCommand[] = [...config.menus.main, ...config.menus.tools];
+            const allCommands: readonly MenuCommand[] = [
+                ...config.menus.main,
+                ...config.menus.tools,
+                ...config.menus.routers,
+                ...config.menus.router_actions,
+            ];
             if (firstToken.startsWith("/")) {
                 const globalTriggerMap: Map<string, MenuCommand> = buildTriggerMap(allCommands);
                 const global = globalTriggerMap.get(key);
@@ -108,7 +113,12 @@ export function registerMenu(bot: Telegraf<BotCtx>, config: MenuConfig): void {
             await replyWithMenu(ctx, "Unknown command");
         });
     });
-    const allCommands: MenuCommand[] = [...config.menus.main, ...config.menus.tools];
+    const allCommands: MenuCommand[] = [
+        ...config.menus.main,
+        ...config.menus.tools,
+        ...config.menus.routers,
+        ...config.menus.router_actions,
+    ];
     for (const c of allCommands) {
         if (!c.command) continue;
         bot.command(c.command, async (ctx: BotCtx): Promise<void> => {

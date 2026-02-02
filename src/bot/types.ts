@@ -6,6 +6,7 @@ import type { Update } from "telegraf/types";
 
 export interface BotSession {
     menu?: MenuId;
+    routerId?: string;
 }
 
 export interface BotState {
