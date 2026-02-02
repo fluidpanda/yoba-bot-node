@@ -1,7 +1,7 @@
 routers:
-    -   id: dev
-        label: Dev
-        host_env: ROUTER_DEV_HOST
-        port_env: ROUTER_DEV_PORT
-        user_env: ROUTER_DEV_USER
-        key_env: ROUTER_DEV_KEY
+  - id: dev
+    label: Dev
+    host_env: ROUTER_DEV_HOST
+    port_env: ROUTER_DEV_PORT
+    user_env: ROUTER_DEV_USER
+    key_env: ROUTER_DEV_KEY
