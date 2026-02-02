@@ -25,7 +25,8 @@
         "prettier": "^3.8.1",
         "tsup": "^8.5.1",
         "tsx": "^4.21.0",
-        "typescript-eslint": "^8.53.1"
+        "typescript-eslint": "^8.53.1",
+        "yaml": "^2.8.2"
     },
     "dependencies": {
         "@types/ssh2": "^1.15.5",
