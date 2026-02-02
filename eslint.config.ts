@@ -21,8 +21,15 @@ export default [
             import: importPlugin,
         },
         rules: {
-            "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
             "@typescript-eslint/no-explicit-any": "warn",
+            "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+            "@typescript-eslint/consistent-type-imports": [
+                "error",
+                {
+                    prefer: "type-imports",
+                    fixStyle: "separate-type-imports",
+                },
+            ],
             "import/order": [
                 "error",
                 {
@@ -32,13 +39,6 @@ export default [
                         order: "asc",
                         caseInsensitive: true,
                     },
-                },
-            ],
-            "@typescript-eslint/consistent-type-imports": [
-                "error",
-                {
-                    prefer: "type-imports",
-                    fixStyle: "separate-type-imports",
                 },
             ],
         },
