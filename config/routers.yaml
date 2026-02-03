@@ -5,3 +5,23 @@ routers:
     port_env: ROUTER_DEV_PORT
     user_env: ROUTER_DEV_USER
     key_env: ROUTER_DEV_KEY
+
+actions:
+  - id: health
+    label: Health
+    description: Get resources print
+    run:
+      - /system/identity/print
+      - /system/resource/print
+
+  - id: ips
+    label: Ips
+    description: Get interfaces and addresses
+    run:
+      - /ip/address/print
+
+  - id: routes
+    label: Routes
+    description: Get available routes
+    run:
+      - /ip/route/print

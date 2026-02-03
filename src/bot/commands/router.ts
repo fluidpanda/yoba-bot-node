@@ -1,7 +1,7 @@
 import type { BotCtx } from "@/bot/types";
-import type { RouterAction, RouterActionId } from "@/routers/commands";
-import type { RouterConfig, RoutersConfig } from "@/routers/config";
-import { ROUTER_ACTIONS } from "@/routers/commands";
+import type { RouterActionSpec } from "@/routers/commands";
+import type { RouterActionConfig, RouterConfig, RoutersConfig } from "@/routers/config";
+import { runRouterAction } from "@/routers/commands";
 
 function isOwner(ctx: BotCtx): boolean {
     const owner: number | null = ctx.state.config?.ownerId ?? null;
@@ -12,12 +12,8 @@ function findRouter(cfg: RoutersConfig, id: string): RouterConfig | undefined {
     return cfg.routers.find((r: RouterConfig): boolean => r.id === id);
 }
 
-function findAction(id: string): RouterActionId | undefined {
-    return (ROUTER_ACTIONS as readonly { id: RouterActionId }[]).some(
-        (a: { id: RouterActionId }): boolean => a.id === id,
-    )
-        ? (id as RouterActionId)
-        : undefined;
+function findAction(cfg: RoutersConfig, id: string): RouterActionSpec | undefined {
+    return cfg.actions.find((a: RouterActionConfig): boolean => a.id !== id);
 }
 
 function parseRouterArgs(ctx: BotCtx): { routerId?: string; actionIdRaw?: string } {
@@ -61,8 +57,7 @@ export function createRouterHandler(deps: { routers: RoutersConfig }) {
             await ctx.state.replyWithMenu?.(`Router: ${router.label}\nChoose action`);
             return;
         }
-        const actionId: RouterActionId | undefined = findAction(actionIdRaw);
-        const action: RouterAction | undefined = ROUTER_ACTIONS.find((a: RouterAction): boolean => a.id === actionId);
+        const action: RouterActionSpec | undefined = findAction(deps.routers, actionIdRaw);
         if (!action) {
             await ctx.reply(`Unknown action: <code>${actionIdRaw}</code>`, { parse_mode: "HTML" });
             return;
@@ -74,7 +69,7 @@ export function createRouterHandler(deps: { routers: RoutersConfig }) {
         });
         await ctx.reply(`<i>Running ${router.label} - ${action.label}...</i>`, { parse_mode: "HTML" });
         try {
-            const out = await action.run(router);
+            const out: string = await runRouterAction(router, action);
             await ctx.reply(out, { parse_mode: "HTML" });
         } catch (err) {
             ctx.state.logger?.error("Router action failed", err, { routerId: router.id, actionId: action.id });

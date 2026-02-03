@@ -12,8 +12,16 @@ export interface RouterConfig {
     knownHostsPath?: string;
 }
 
+export interface RouterActionConfig {
+    id: string;
+    label: string;
+    description: string;
+    run: string[];
+}
+
 export interface RoutersConfig {
     routers: RouterConfig[];
+    actions: RouterActionConfig[];
 }
 
 export interface RouterYaml {
@@ -26,17 +34,27 @@ export interface RouterYaml {
     port?: number;
 }
 
+export interface ActionYaml {
+    id: string;
+    label: string;
+    description?: string;
+    run: string[];
+}
+
 export interface RoutersYamlFile {
     routers: RouterYaml[];
+    actions: ActionYaml[];
 }
 
 function isRoutersYamlFile(v: unknown): v is RoutersYamlFile {
     if (typeof v !== "object" || v === null) return false;
 
-    const obj = v as Record<string, unknown>;
-    if (!Array.isArray(obj.routers)) return false;
+    const objRouters = v as Record<string, unknown>;
+    if (!Array.isArray(objRouters.routers) || !Array.isArray(objRouters.actions)) {
+        return false;
+    }
 
-    return obj.routers.every((r): boolean => {
+    const routersObject: boolean = objRouters.routers.every((r): boolean => {
         if (typeof r !== "object" || r === null) return false;
         const o = r as Record<string, unknown>;
 
@@ -50,6 +68,19 @@ function isRoutersYamlFile(v: unknown): v is RoutersYamlFile {
             (o.known_hosts_env === undefined || typeof o.known_hosts_env === "string")
         );
     });
+
+    const actionsObject = objRouters.actions.every((r): boolean => {
+        if (typeof r !== "object" || r === null) return false;
+        const o = r as Record<string, unknown>;
+        return (
+            typeof o.id === "string" &&
+            typeof o.label === "string" &&
+            (o.description === undefined || typeof o.description === "string") &&
+            Array.isArray(o.run) &&
+            o.run.every((c): c is string => typeof c === "string")
+        );
+    });
+    return routersObject && actionsObject;
 }
 
 export function loadRoutersConfig(): RoutersConfig {
@@ -69,6 +100,12 @@ export function loadRoutersConfig(): RoutersConfig {
             privateKeyPath: requireEnv(r.key_env),
             knownHostsPath: r.known_hosts_env ? requireEnv(r.known_hosts_env) : undefined,
             port: r.port ?? 22,
+        })),
+        actions: parsed.actions.map((a) => ({
+            id: a.id,
+            label: a.label,
+            description: a.description ?? "",
+            run: [...a.run],
         })),
     };
 }

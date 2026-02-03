@@ -1,10 +1,10 @@
 import type { StatusOptions } from "@/bot/commands/status";
 import type { MenuId } from "@/bot/menu/register";
 import type { BotCtx } from "@/bot/types";
-import type { RouterConfig, RoutersConfig } from "@/routers/config";
+import type { RouterActionConfig, RouterConfig, RoutersConfig } from "@/routers/config";
 import { createRouterHandler } from "@/bot/commands/router";
 import { statusCommand } from "@/bot/commands/status";
-import { ROUTER_ACTIONS } from "@/routers/commands";
+import { runRouterAction } from "@/routers/commands";
 
 export interface MenuCommand {
     id: string;
@@ -51,14 +51,14 @@ function routerMenuCommands(deps: MenuDeps): readonly MenuCommand[] {
 
 function routerActionsMenuCommands(deps: MenuDeps): readonly MenuCommand[] {
     return [
-        ...ROUTER_ACTIONS.map(
-            (a): MenuCommand => ({
+        ...deps.routers.actions.map(
+            (a: RouterActionConfig): MenuCommand => ({
                 id: `routers_actions.${a.id}`,
                 label: a.label,
                 description: a.description,
                 triggers: [a.id, a.label],
                 handler: async (ctx: BotCtx): Promise<void> => {
-                    const routerId = ctx.session.routerId;
+                    const routerId: string | undefined = ctx.session.routerId;
                     if (!routerId) {
                         ctx.session.menu = "routers";
                         await ctx.state.replyWithMenu?.("Select router");
@@ -73,7 +73,7 @@ function routerActionsMenuCommands(deps: MenuDeps): readonly MenuCommand[] {
                         return;
                     }
                     await ctx.reply(`<i>Running ${router.label} - ${a.label}...</i>`, { parse_mode: "HTML" });
-                    const out = await a.run(router);
+                    const out = await runRouterAction(router, a);
                     await ctx.reply(out, { parse_mode: "HTML" });
                 },
             }),
