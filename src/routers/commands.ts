@@ -6,6 +6,7 @@ export interface RouterActionSpec {
     id: string;
     label: string;
     description: string;
+    targets: string[];
     run: string[];
 }
 

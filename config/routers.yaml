@@ -1,6 +1,7 @@
 routers:
   - id: dev
     label: Dev
+    type: routeros
     host_env: ROUTER_DEV_HOST
     port_env: ROUTER_DEV_PORT
     user_env: ROUTER_DEV_USER
@@ -10,6 +11,8 @@ actions:
   - id: health
     label: Health
     description: Get resources print
+    targets:
+      - routeros
     run:
       - /system/identity/print
       - /system/resource/print
@@ -17,11 +20,15 @@ actions:
   - id: ips
     label: Ips
     description: Get interfaces and addresses
+    targets:
+      - routeros
     run:
       - /ip/address/print
 
   - id: routes
     label: Routes
     description: Get available routes
+    targets:
+      - routeros
     run:
       - /ip/route/print

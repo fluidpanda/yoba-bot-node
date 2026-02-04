@@ -5,6 +5,7 @@ import { requireEnv } from "@/config";
 export interface RouterConfig {
     id: string;
     label: string;
+    type: string;
     host: string;
     port?: number;
     username: string;
@@ -16,6 +17,7 @@ export interface RouterActionConfig {
     id: string;
     label: string;
     description: string;
+    targets: string[];
     run: string[];
 }
 
@@ -27,6 +29,7 @@ export interface RoutersConfig {
 export interface RouterYaml {
     id: string;
     label: string;
+    type: string;
     host_env: string;
     user_env: string;
     key_env: string;
@@ -38,6 +41,7 @@ export interface ActionYaml {
     id: string;
     label: string;
     description?: string;
+    targets: string[];
     run: string[];
 }
 
@@ -61,6 +65,7 @@ function isRoutersYamlFile(v: unknown): v is RoutersYamlFile {
         return (
             typeof o.id === "string" &&
             typeof o.label === "string" &&
+            typeof o.type === "string" &&
             typeof o.host_env === "string" &&
             typeof o.user_env === "string" &&
             typeof o.key_env === "string" &&
@@ -76,6 +81,8 @@ function isRoutersYamlFile(v: unknown): v is RoutersYamlFile {
             typeof o.id === "string" &&
             typeof o.label === "string" &&
             (o.description === undefined || typeof o.description === "string") &&
+            Array.isArray(o.targets) &&
+            o.targets.every((t): t is string => typeof t === "string") &&
             Array.isArray(o.run) &&
             o.run.every((c): c is string => typeof c === "string")
         );
@@ -95,6 +102,7 @@ export function loadRoutersConfig(): RoutersConfig {
         routers: parsed.routers.map((r) => ({
             id: r.id,
             label: r.label,
+            type: r.type,
             host: requireEnv(r.host_env),
             username: requireEnv(r.user_env),
             privateKeyPath: requireEnv(r.key_env),
@@ -105,6 +113,7 @@ export function loadRoutersConfig(): RoutersConfig {
             id: a.id,
             label: a.label,
             description: a.description ?? "",
+            targets: [...a.targets],
             run: [...a.run],
         })),
     };
