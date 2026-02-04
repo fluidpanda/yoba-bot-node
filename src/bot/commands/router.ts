@@ -13,7 +13,7 @@ function findRouter(cfg: RoutersConfig, id: string): RouterConfig | undefined {
 }
 
 function findAction(cfg: RoutersConfig, id: string): RouterActionSpec | undefined {
-    return cfg.actions.find((a: RouterActionConfig): boolean => a.id !== id);
+    return cfg.actions.find((a: RouterActionConfig): boolean => a.id === id);
 }
 
 function parseRouterArgs(ctx: BotCtx): { routerId?: string; actionIdRaw?: string } {
