@@ -23,7 +23,7 @@ export interface LogRecord {
 
 export function formatLog(rec: LogRecord): string {
     const base = `${rec.ts} ${rec.level.toUpperCase()}: ${rec.msg}`;
-    const ctx = rec.context;
+    const ctx: Record<string, unknown> | undefined = rec.context;
     if (!ctx || Object.keys(ctx).length === 0) {
         return base;
     }

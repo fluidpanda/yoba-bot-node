@@ -74,7 +74,7 @@ function isRoutersYamlFile(v: unknown): v is RoutersYamlFile {
         );
     });
 
-    const actionsObject = objRouters.actions.every((r): boolean => {
+    const actionsObject: boolean = objRouters.actions.every((r): boolean => {
         if (typeof r !== "object" || r === null) return false;
         const o = r as Record<string, unknown>;
         return (
@@ -99,7 +99,7 @@ export function loadRoutersConfig(): RoutersConfig {
     }
 
     return {
-        routers: parsed.routers.map((r) => ({
+        routers: parsed.routers.map((r: RouterYaml) => ({
             id: r.id,
             label: r.label,
             type: r.type,
@@ -109,7 +109,7 @@ export function loadRoutersConfig(): RoutersConfig {
             knownHostsPath: r.known_hosts_env ? requireEnv(r.known_hosts_env) : undefined,
             port: r.port ?? 22,
         })),
-        actions: parsed.actions.map((a) => ({
+        actions: parsed.actions.map((a: ActionYaml) => ({
             id: a.id,
             label: a.label,
             description: a.description ?? "",
