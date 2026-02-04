@@ -1,6 +1,6 @@
 import "@/env";
 import { session, Telegraf } from "telegraf";
-import type { MenuId } from "@/bot/menu/register";
+import type { MenuDefinition, MenuId } from "@/bot/menu/register";
 import type { BotCtx } from "@/bot/types";
 import type { AppConfig } from "@/config";
 import type { Logger } from "@/logging/logger";
@@ -26,7 +26,7 @@ async function main(): Promise<void> {
         },
         routers,
     } as const;
-    const menus = buildMenus(deps);
+    const menus: Record<MenuId, MenuDefinition> = buildMenus(deps);
     const bot = new Telegraf<BotCtx>(appConfig.botToken);
 
     // yoba hack 9000:

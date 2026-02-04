@@ -6,10 +6,30 @@ import { withMainMenu } from "@/bot/menu/keyboard";
 export type MenuId = "main" | "tools" | "routers" | "router_actions";
 
 export interface MenuConfig {
-    menus: Record<MenuId, readonly MenuCommand[]>;
+    menus: Record<MenuId, MenuDefinition>;
     columnsByMenu: Record<MenuId, number>;
     getMenuId(ctx: BotCtx): MenuId;
     setMenuId(ctx: BotCtx, menu: MenuId): void;
+}
+
+export interface MenuFactory {
+    readonly kind: "factory";
+    (ctx: BotCtx): readonly MenuCommand[];
+}
+
+export interface StaticMenu {
+    readonly kind: "static";
+    readonly commands: readonly MenuCommand[];
+}
+
+export type MenuDefinition = StaticMenu | MenuFactory;
+
+function isStaticMenu(menu: MenuDefinition): menu is StaticMenu {
+    return menu.kind === "static";
+}
+
+function isMenuFactory(menu: MenuDefinition): menu is MenuFactory {
+    return menu.kind === "factory";
 }
 
 function getMessageText(ctx: BotCtx): string | null {
@@ -44,9 +64,26 @@ function buildTriggerMap(commands: readonly MenuCommand[]): Map<string, MenuComm
     return triggerMap;
 }
 
+function getAllStaticCommands(config: MenuConfig): readonly MenuCommand[] {
+    const result: MenuCommand[] = [];
+    for (const menu of Object.values(config.menus)) {
+        if (!isStaticMenu(menu)) continue;
+        for (const cmd of menu.commands) {
+            if (cmd.command) {
+                result.push(cmd);
+            }
+        }
+    }
+    return result;
+}
+
 export function registerMenu(bot: Telegraf<BotCtx>, config: MenuConfig): void {
     function commandsFor(ctx: BotCtx): readonly MenuCommand[] {
-        return config.menus[config.getMenuId(ctx)];
+        const menu: MenuDefinition = config.menus[config.getMenuId(ctx)];
+        if (isMenuFactory(menu)) {
+            return menu(ctx);
+        }
+        return menu.commands;
     }
     function columnsFor(ctx: BotCtx): number {
         return config.columnsByMenu[config.getMenuId(ctx)];
@@ -81,15 +118,10 @@ export function registerMenu(bot: Telegraf<BotCtx>, config: MenuConfig): void {
             const firstToken: string = raw.trim().split(/\s+/g)[0] ?? raw;
             const key: string = normalizeFreeText(firstToken);
 
-            const allCommands: readonly MenuCommand[] = [
-                ...config.menus.main,
-                ...config.menus.tools,
-                ...config.menus.routers,
-                ...config.menus.router_actions,
-            ];
+            const staticCommands: readonly MenuCommand[] = getAllStaticCommands(config);
             if (firstToken.startsWith("/")) {
-                const globalTriggerMap: Map<string, MenuCommand> = buildTriggerMap(allCommands);
-                const global = globalTriggerMap.get(key);
+                const globalTriggerMap: Map<string, MenuCommand> = buildTriggerMap(staticCommands);
+                const global: MenuCommand | undefined = globalTriggerMap.get(key);
                 if (global) {
                     await global.handler(ctx);
                     return;
@@ -113,15 +145,9 @@ export function registerMenu(bot: Telegraf<BotCtx>, config: MenuConfig): void {
             await replyWithMenu(ctx, "Unknown command");
         });
     });
-    const allCommands: MenuCommand[] = [
-        ...config.menus.main,
-        ...config.menus.tools,
-        ...config.menus.routers,
-        ...config.menus.router_actions,
-    ];
-    for (const c of allCommands) {
-        if (!c.command) continue;
-        bot.command(c.command, async (ctx: BotCtx): Promise<void> => {
+    const staticCommands: readonly MenuCommand[] = getAllStaticCommands(config);
+    for (const c of staticCommands) {
+        bot.command(c.command!, async (ctx: BotCtx): Promise<void> => {
             await run(ctx, async (): Promise<void> => {
                 await c.handler(ctx);
             });
